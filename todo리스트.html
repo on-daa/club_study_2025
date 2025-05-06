@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>to do list 5월</title>
+    <style>
+        table, th, td {
+             border: 1px solid black;
+             border-collapse: collapse; 
+        }
+
+        td {
+            width: 150px;
+            height: 100px; 
+            text-align: left;
+            vertical-align: top; 
+            padding: 5px; 
+            position: relative;
+        }
+
+        .num {
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            display: block;
+        }
+
+        .item {
+            margin-top: 3px; 
+            display: flex;
+            align-items: center; 
+        }
+
+        .item input[type="checkbox"] {
+            margin-right: 5px; 
+        }
+
+        #contain {
+            margin-top: 10px; 
+            display: flex;
+            align-items: center;
+        }
+
+        #bar {
+            margin-right: 10px;
+            width: 200px; 
+        }
+
+
+        #adds {
+            margin-bottom: 20px;
+        }
+
+        #adds input {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>5월</h1>
+
+
+    <div id="adds">
+        <input type="text" id="todoInput" placeholder="할 일을 입력하세요">
+        날짜 범위:
+        <input type="number" id="startDayInput" placeholder="시작일" min="1" max="31">
+        ~
+        <input type="number" id="endDayInput" placeholder="종료일" min="1" max="31">
+        <button id="addbtn">추가하기</button>
+    </div>
+
+    <div id="contain">
+        <label for="bar">진행률:</label>
+        <progress id="bar" value="0" max="100"></progress>
+        <span id="text">0%</span>
+    </div>
+    <br>
+    <table>
+        <thead>
+            <tr>
+                <th>일요일</th><th>월요일</th><th>화요일</th><th>수요일</th><th>목요일</th><th>금요일</th><th>토요일</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td></td><td></td><td></td><td></td><td><span class="num">1</span></td><td><span class="num">2</span></td><td><span class="num">3</span></td>
+            </tr>
+            <tr>
+                <td><span class="num">4</span></td><td><span class="num">5</span></td><td><span class="num">6</span></td><td><span class="num">7</span></td><td><span class="num">8</span></td><td><span class="num">9</span></td><td><span class="num">10</span></td>
+            </tr>
+            <tr>
+                <td><span class="num">11</span></td><td><span class="num">12</span></td><td><span class="num">13</span></td><td><span class="num">14</span></td><td><span class="num">15</span></td><td><span class="num">16</span></td><td><span class="num">17</span></td>
+            </tr>
+            <tr>
+                <td><span class="num">18</span></td><td><span class="num">19</span></td><td><span class="num">20</span></td><td><span class="num">21</span></td><td><span class="num">22</span></td><td><span class="num">23</span></td><td><span class="num">24</span></td>
+            </tr>
+            <tr>
+                <td><span class="num">25</span></td><td><span class="num">26</span></td><td><span class="num">27</span></td><td><span class="num">28</span></td><td><span class="num">29</span></td><td><span class="num">30</span></td><td><span class="num">31</span></td>
+            </tr>
+             <tr>
+                <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const todoInput = document.getElementById('todoInput');
+        const startDayInput = document.getElementById('startDayInput'); 
+        const endDayInput = document.getElementById('endDayInput');     
+        const addbtn = document.getElementById('addbtn');
+        const calendarTable = document.querySelector('table tbody');
+        const bar = document.getElementById('bar');
+        const text = document.getElementById('text');
+
+
+        function updateProgress() {
+            const checkboxes = calendarTable.querySelectorAll('input[type="checkbox"]');
+            const checkedCheckboxes = calendarTable.querySelectorAll('input[type="checkbox"]:checked');
+
+            const totalTodos = checkboxes.length;
+            const completedTodos = checkedCheckboxes.length;
+
+            let progress = 0;
+            if (totalTodos > 0) {
+                progress = (completedTodos / totalTodos) * 100;
+            }
+
+            bar.value = progress;
+            text.textContent = `${Math.round(progress)}%`; 
+        }
+
+        addbtn.addEventListener('click', () => {
+            const todoText = todoInput.value.trim(); 
+            const startDay = parseInt(startDayInput.value, 10); 
+            const endDay = parseInt(endDayInput.value, 10);    
+
+            if (todoText === '') {
+                alert('할 일을 입력해주세요.');
+                return;
+            }
+            if (isNaN(startDay) || isNaN(endDay) || startDay < 1 || endDay > 31 || startDay > endDay) {
+                 alert('유효한 날짜 범위를 입력해주세요 (1-31 사이, 시작일 <= 종료일).');
+                 return;
+            }
+
+            const cells = calendarTable.querySelectorAll('td');
+            let addedCount = 0;
+
+            for (let dayNumber = startDay; dayNumber <= endDay; dayNumber++) {
+                let targetCell = null;
+
+                cells.forEach(cell => {
+                    const daySpan = cell.querySelector('.num');
+                    if (daySpan && parseInt(daySpan.textContent, 10) === dayNumber) {
+                        targetCell = cell;
+                    }
+                });
+
+                if (targetCell) {
+
+                    const ItemDiv = document.createElement('div');
+                    ItemDiv.classList.add('item');
+
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+
+                    const todoSpan = document.createElement('span');
+                    todoSpan.textContent = todoText;
+
+                    ItemDiv.appendChild(checkbox);
+                    ItemDiv.appendChild(todoSpan);
+
+
+                    targetCell.appendChild(ItemDiv);
+
+                    checkbox.addEventListener('change', updateProgress);
+
+                    addedCount++; 
+
+                } else {
+
+                    console.warn(`날짜 ${dayNumber}에 해당하는 셀을 찾을 수 없습니다.`);
+                }
+            }
+
+
+            if (addedCount > 0) {
+                todoInput.value = '';
+                startDayInput.value = '';
+                endDayInput.value = '';
+
+                updateProgress();
+            } else {
+                 alert('입력하신 날짜 범위에 해당하는 날짜가 달력에 없습니다.');
+            }
+        });
+
+        updateProgress();
+
+    </script>
+
+</body>
+</html>
